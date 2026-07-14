@@ -62,10 +62,10 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // --- Rule 3: Non-developer hits /seller → redirect to /dashboard ---
+  // --- Rule 3: Non-developer hits /seller → redirect to /browse ---
   if (isSellerDashboard && user && role !== ROLES.DEVELOPER) {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/browse";
     return NextResponse.redirect(url);
   }
 
@@ -79,7 +79,14 @@ export async function updateSession(request: NextRequest) {
   // --- Rule 5: Authenticated user hits auth pages → role-based redirect ---
   if (isAuthPage && user) {
     const url = request.nextUrl.clone();
-    url.pathname = role === ROLES.DEVELOPER ? "/seller" : "/dashboard";
+    url.pathname = role === ROLES.DEVELOPER ? "/seller" : "/browse";
+    return NextResponse.redirect(url);
+  }
+
+  // --- Rule 6: Logged-in user hits / → role-based redirect ---
+  if (pathname === "/" && user) {
+    const url = request.nextUrl.clone();
+    url.pathname = role === ROLES.DEVELOPER ? "/seller" : "/browse";
     return NextResponse.redirect(url);
   }
 

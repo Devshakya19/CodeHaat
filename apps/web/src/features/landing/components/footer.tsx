@@ -1,35 +1,36 @@
+import Link from "next/link";
 import { Terminal, Globe } from "lucide-react";
 import { GithubIcon } from "@/shared/components/github-icon";
 import { Badge } from "@/shared/ui/badge";
 
 const FOOTER_LINKS = {
   Product: [
-    { label: "Browse Products", href: "#" },
-    { label: "Categories", href: "#" },
-    { label: "Pricing", href: "#pricing" },
-    { label: "Live Preview", href: "#" },
-    { label: "GitHub Integration", href: "#" },
+    { label: "Browse Products", href: "/browse" },
+    { label: "Categories", href: "/browse" },
+    { label: "Pricing", href: "/#pricing" },
+    { label: "Live Preview", href: "/browse" },
+    { label: "GitHub Integration", href: "/developer" },
   ],
   Sellers: [
-    { label: "Start Selling", href: "#sellers" },
-    { label: "Seller Dashboard", href: "#" },
-    { label: "Payouts", href: "#" },
-    { label: "Seller Analytics", href: "#" },
-    { label: "Seller Guide", href: "#" },
+    { label: "Start Selling", href: "/developer" },
+    { label: "Seller Dashboard", href: "/seller" },
+    { label: "Payouts", href: "/seller/earnings" },
+    { label: "Seller Analytics", href: "/seller" },
+    { label: "Seller Guide", href: "/developer" },
   ],
   Company: [
-    { label: "About", href: "#" },
-    { label: "Blog", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Contact", href: "#" },
-    { label: "Press Kit", href: "#" },
+    { label: "About", href: "/about" },
+    { label: "Blog", href: "/blog" },
+    { label: "Careers", href: "/careers" },
+    { label: "Contact", href: "/contact" },
+    { label: "Press Kit", href: "/press" },
   ],
   Legal: [
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
-    { label: "Refund Policy", href: "#" },
-    { label: "License Agreement", href: "#" },
-    { label: "Cookie Policy", href: "#" },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms of Service", href: "/terms" },
+    { label: "Refund Policy", href: "/refund" },
+    { label: "License Agreement", href: "/license" },
+    { label: "Cookie Policy", href: "/cookies" },
   ],
 };
 
@@ -73,12 +74,12 @@ export function Footer() {
               <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link.label}>
-                    <a
+                    <Link
                       href={link.href}
                       className="text-sm text-slate-600 hover:text-slate-950 transition-colors"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
