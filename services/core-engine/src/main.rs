@@ -30,10 +30,14 @@ async fn main() -> std::io::Result<()> {
             .route("/health", web::get().to(handlers::health::health_check))
             // Auth
             .route("/api/auth/verify", web::post().to(handlers::auth::verify_token))
+            // Profile
+            .route("/api/profile/{id}", web::get().to(handlers::profile::get_profile))
+            .route("/api/profile", web::put().to(handlers::profile::update_profile))
             // Products
             .route("/api/products", web::get().to(handlers::products::list_products))
             .route("/api/products/{id}", web::get().to(handlers::products::get_product))
             // Seller products
+            .route("/api/seller/products", web::get().to(handlers::seller::list_seller_products))
             .route("/api/seller/products", web::post().to(handlers::seller::create_product))
             .route("/api/seller/products/{id}", web::put().to(handlers::seller::update_product))
             .route("/api/seller/products/{id}", web::delete().to(handlers::seller::delete_product))

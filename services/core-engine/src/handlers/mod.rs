@@ -1,5 +1,6 @@
 pub mod health;
 pub mod auth;
+pub mod profile;
 pub mod products;
 pub mod seller;
 pub mod wallet;

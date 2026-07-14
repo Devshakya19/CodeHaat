@@ -1,8 +1,6 @@
 "use client";
 import { FadeIn } from "@/shared/components/fade-in";
 
-import { useRef, type ReactNode } from "react";
-import { motion, useInView } from "framer-motion";
 import { Github, Eye, Shield, Wallet, GitBranch, Lock } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui/card";
 

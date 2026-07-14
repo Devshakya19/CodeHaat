@@ -41,11 +41,12 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/reset-password");
 
   const isBuyerBrowse = pathname.startsWith("/browse");
+  const isBuyerDashboard = pathname.startsWith("/dashboard");
   const isSellerDashboard = pathname.startsWith("/seller");
   const isDeveloperRegister = pathname.startsWith("/developer-register");
 
   const isProtectedRoute =
-    isBuyerBrowse || isSellerDashboard || pathname.startsWith("/settings");
+    isBuyerBrowse || isBuyerDashboard || isSellerDashboard || pathname.startsWith("/settings");
 
   // --- Rule 1: Unauthenticated → /login ---
   if (isProtectedRoute && !user) {
@@ -54,17 +55,17 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // --- Rule 2: Developer hits /browse → redirect to /seller ---
-  if (isBuyerBrowse && user && role === ROLES.DEVELOPER) {
+  // --- Rule 2: Developer hits /browse or /dashboard → redirect to /seller ---
+  if ((isBuyerBrowse || isBuyerDashboard) && user && role === ROLES.DEVELOPER) {
     const url = request.nextUrl.clone();
     url.pathname = "/seller";
     return NextResponse.redirect(url);
   }
 
-  // --- Rule 3: Non-developer hits /seller → redirect to /browse ---
+  // --- Rule 3: Non-developer hits /seller → redirect to /dashboard ---
   if (isSellerDashboard && user && role !== ROLES.DEVELOPER) {
     const url = request.nextUrl.clone();
-    url.pathname = "/browse";
+    url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
 
@@ -78,7 +79,7 @@ export async function updateSession(request: NextRequest) {
   // --- Rule 5: Authenticated user hits auth pages → role-based redirect ---
   if (isAuthPage && user) {
     const url = request.nextUrl.clone();
-    url.pathname = role === ROLES.DEVELOPER ? "/seller" : "/browse";
+    url.pathname = role === ROLES.DEVELOPER ? "/seller" : "/dashboard";
     return NextResponse.redirect(url);
   }
 

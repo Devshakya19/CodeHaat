@@ -6,6 +6,20 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { getUserRole, ROLES } from "@/shared/lib/roles";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4001";
+
+async function fetchSellerStats(token: string) {
+  try {
+    const res = await fetch(`${API_URL}/api/seller/stats`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    return data.success ? data.data : { total_products: 0, active_products: 0, total_sales: 0, total_revenue_paise: 0, total_earned_paise: 0 };
+  } catch {
+    return { total_products: 0, active_products: 0, total_sales: 0, total_revenue_paise: 0, total_earned_paise: 0 };
+  }
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -14,22 +28,10 @@ export default async function DashboardPage() {
   const role = getUserRole(user);
   if (role !== ROLES.DEVELOPER) redirect("/browse");
 
-  // Fetch seller stats
-  const { data: products } = await supabase
-    .from("products")
-    .select("id, status, sales_count, price_paise")
-    .eq("seller_id", user.id);
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token || "";
 
-  const { data: orders } = await supabase
-    .from("orders")
-    .select("id, amount_paise, seller_amount_paise, status")
-    .eq("seller_id", user.id)
-    .eq("status", "completed");
-
-  const totalProducts = products?.length || 0;
-  const activeProducts = products?.filter((p) => p.status === "active").length || 0;
-  const totalSales = orders?.length || 0;
-  const totalRevenue = orders?.reduce((sum, o) => sum + o.seller_amount_paise, 0) || 0;
+  const stats = await fetchSellerStats(token);
 
   return (
     <>
@@ -57,7 +59,7 @@ export default async function DashboardPage() {
               </div>
               <div>
                 <div className="text-sm text-slate-500">Total Products</div>
-                <div className="text-2xl font-bold text-slate-950">{totalProducts}</div>
+                <div className="text-2xl font-bold text-slate-950">{stats.total_products}</div>
               </div>
             </div>
           </CardContent>
@@ -71,7 +73,7 @@ export default async function DashboardPage() {
               </div>
               <div>
                 <div className="text-sm text-slate-500">Total Sales</div>
-                <div className="text-2xl font-bold text-slate-950">{totalSales}</div>
+                <div className="text-2xl font-bold text-slate-950">{stats.total_sales}</div>
               </div>
             </div>
           </CardContent>
@@ -85,7 +87,7 @@ export default async function DashboardPage() {
               </div>
               <div>
                 <div className="text-sm text-slate-500">Revenue</div>
-                <div className="text-2xl font-bold text-slate-950">₹{(totalRevenue / 100).toLocaleString()}</div>
+                <div className="text-2xl font-bold text-slate-950">₹{(stats.total_revenue_paise / 100).toLocaleString()}</div>
               </div>
             </div>
           </CardContent>
@@ -99,7 +101,7 @@ export default async function DashboardPage() {
               </div>
               <div>
                 <div className="text-sm text-slate-500">You Keep (97.5%)</div>
-                <div className="text-2xl font-bold text-emerald-600">₹{(totalRevenue * 0.975 / 100).toLocaleString()}</div>
+                <div className="text-2xl font-bold text-emerald-600">₹{(stats.total_earned_paise / 100).toLocaleString()}</div>
               </div>
             </div>
           </CardContent>
@@ -114,7 +116,7 @@ export default async function DashboardPage() {
               <Package className="w-5 h-5 text-slate-600" />
               <div>
                 <div className="font-semibold text-slate-950 text-sm">My Products</div>
-                <div className="text-xs text-slate-500">{activeProducts} active</div>
+                <div className="text-xs text-slate-500">{stats.active_products} active</div>
               </div>
             </CardContent>
           </Card>

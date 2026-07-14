@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, ShoppingCart, User, Menu } from "lucide-react";
+import { Search, Menu, User } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { CodeHaatLogo } from "@/shared/components/codehaat-logo";
@@ -18,6 +18,17 @@ const CATEGORIES = [
   { label: "Boilerplates", value: "boilerplates" },
   { label: "API Templates", value: "api-templates" },
 ];
+
+function getShortName(fullName?: string, email?: string): string {
+  if (fullName && fullName.trim()) {
+    const parts = fullName.trim().split(/\s+/);
+    return parts[0]; // First name only
+  }
+  if (email) {
+    return email.split("@")[0];
+  }
+  return "User";
+}
 
 interface BrowseNavbarProps {
   email: string;
@@ -34,6 +45,7 @@ export function BrowseNavbar({
 }: BrowseNavbarProps) {
   const router = useRouter();
   const [search, setSearch] = useState(searchQuery);
+  const shortName = getShortName(fullName, email);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -75,12 +87,17 @@ export function BrowseNavbar({
           </form>
         </div>
 
-        {/* Right side */}
+        {/* Right side - Profile */}
         <div className="hidden md:flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-sm">
-            <User className="w-4 h-4 text-slate-600" />
-            <span className="text-slate-700 font-medium">{fullName || email}</span>
-          </div>
+          <Link
+            href="/dashboard/profile"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+          >
+            <div className="w-8 h-8 rounded-full bg-slate-950 flex items-center justify-center text-sm font-bold text-white">
+              {shortName[0]?.toUpperCase() || "U"}
+            </div>
+            <span className="text-sm font-medium text-slate-700">{shortName}</span>
+          </Link>
           <form action="/api/auth/logout" method="post">
             <Button variant="ghost" size="sm" className="text-slate-500 text-xs">
               Logout
@@ -107,9 +124,24 @@ export function BrowseNavbar({
                   className="h-10 pl-10 border-slate-300 bg-slate-50 text-sm"
                 />
               </form>
-              <div className="text-sm text-slate-600">
-                Signed in as <span className="font-medium text-slate-950">{fullName || email}</span>
-              </div>
+              <Link
+                href="/dashboard/profile"
+                className="flex items-center gap-3 p-3 rounded-lg bg-slate-50"
+              >
+                <div className="w-10 h-10 rounded-full bg-slate-950 flex items-center justify-center text-sm font-bold text-white">
+                  {shortName[0]?.toUpperCase() || "U"}
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-slate-950">{shortName}</div>
+                  <div className="text-xs text-slate-500">{email}</div>
+                </div>
+              </Link>
+              <Link href="/dashboard" className="text-sm font-medium text-slate-700 hover:text-slate-950">
+                My Dashboard
+              </Link>
+              <Link href="/dashboard/purchases" className="text-sm font-medium text-slate-700 hover:text-slate-950">
+                My Purchases
+              </Link>
               <form action="/api/auth/logout" method="post">
                 <Button variant="outline" className="w-full border-slate-300 text-slate-700">
                   Logout

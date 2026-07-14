@@ -37,6 +37,20 @@ pub async fn create_product(
     }
 }
 
+pub async fn list_seller_products(
+    state: web::Data<AppState>,
+) -> HttpResponse {
+    let client = SupabaseClient::new(&state);
+
+    // TODO: Get seller_id from JWT token
+    let seller_id = "00000000-0000-0000-0000-000000000000";
+
+    match client.query::<Vec<Product>>("products", &format!("seller_id=eq.{}&order=created_at.desc", seller_id)).await {
+        Ok(products) => HttpResponse::Ok().json(ApiResponse::success(products, "Products fetched")),
+        Err(e) => HttpResponse::InternalServerError().json(ApiResponse::<()>::error(&e)),
+    }
+}
+
 pub async fn update_product(
     state: web::Data<AppState>,
     path: web::Path<String>,
@@ -72,13 +86,28 @@ pub async fn delete_product(
 pub async fn get_stats(
     state: web::Data<AppState>,
 ) -> HttpResponse {
-    // TODO: Get seller_id from JWT and fetch real stats
+    let client = SupabaseClient::new(&state);
+
+    // TODO: Get seller_id from JWT token
+    let seller_id = "00000000-0000-0000-0000-000000000000";
+
+    // Fetch products count
+    let products = client.query::<Vec<serde_json::Value>>("products", &format!("seller_id=eq.{}", seller_id)).await.unwrap_or_default();
+    let total_products = products.len() as i32;
+    let active_products = products.iter().filter(|p| p.get("status").and_then(|s| s.as_str()) == Some("active")).count() as i32;
+
+    // Fetch completed orders
+    let orders = client.query::<Vec<serde_json::Value>>("orders", &format!("seller_id=eq.{}&status=eq.completed", seller_id)).await.unwrap_or_default();
+    let total_sales = orders.len() as i32;
+    let total_revenue_paise: i32 = orders.iter().filter_map(|o| o.get("seller_amount_paise").and_then(|v| v.as_i64())).sum::<i64>() as i32;
+    let total_earned_paise = total_revenue_paise;
+
     let stats = SellerStats {
-        total_products: 0,
-        active_products: 0,
-        total_sales: 0,
-        total_revenue_paise: 0,
-        total_earned_paise: 0,
+        total_products,
+        active_products,
+        total_sales,
+        total_revenue_paise,
+        total_earned_paise,
     };
 
     HttpResponse::Ok().json(ApiResponse::success(stats, "Stats fetched"))

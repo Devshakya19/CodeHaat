@@ -1,5 +1,4 @@
 use actix_web::{web, HttpResponse};
-use uuid::Uuid;
 use crate::services::{AppState, ApiResponse, supabase::SupabaseClient};
 use crate::models::{Order, CreateOrderRequest};
 
@@ -7,10 +6,7 @@ pub async fn create_order(
     state: web::Data<AppState>,
     body: web::Json<CreateOrderRequest>,
 ) -> HttpResponse {
-    let client = SupabaseClient::new(&state);
-
-    // TODO: Verify payment with Razorpay, then create order
-    // For now, return a placeholder
+    // TODO: Implement order creation with Razorpay
     HttpResponse::Ok().json(ApiResponse::<()> {
         success: true,
         data: None,
@@ -21,13 +17,23 @@ pub async fn create_order(
 
 pub async fn list_orders(
     state: web::Data<AppState>,
+    query: web::Query<std::collections::HashMap<String, String>>,
 ) -> HttpResponse {
     let client = SupabaseClient::new(&state);
 
-    // TODO: Get user_id from JWT and filter by role (buyer_id or seller_id)
-    let query = "order=created_at.desc";
+    // Build query string from params
+    let mut query_str = String::from("order=created_at.desc");
+    if let Some(buyer_id) = query.get("buyer_id") {
+        query_str.push_str(&format!("&buyer_id=eq.{}", buyer_id));
+    }
+    if let Some(seller_id) = query.get("seller_id") {
+        query_str.push_str(&format!("&seller_id=eq.{}", seller_id));
+    }
+    if let Some(status) = query.get("status") {
+        query_str.push_str(&format!("&status=eq.{}", status));
+    }
 
-    match client.query::<Vec<Order>>("orders", query).await {
+    match client.query::<Vec<Order>>("orders", &query_str).await {
         Ok(orders) => HttpResponse::Ok().json(ApiResponse::success(orders, "Orders fetched")),
         Err(e) => HttpResponse::InternalServerError().json(ApiResponse::<()>::error(&e)),
     }

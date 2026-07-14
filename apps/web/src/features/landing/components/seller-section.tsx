@@ -1,9 +1,7 @@
 "use client";
 import { FadeIn } from "@/shared/components/fade-in";
 
-import { useRef, type ReactNode } from "react";
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
 import { Check, Github, FileCode2 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";

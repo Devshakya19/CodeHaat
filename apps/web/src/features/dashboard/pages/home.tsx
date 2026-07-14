@@ -5,26 +5,55 @@ import { ShoppingCart, Package, Clock, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4001";
+
+async function fetchProfile(userId: string, token: string) {
+  try {
+    const res = await fetch(`${API_URL}/api/profile/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchOrders(userId: string, token: string) {
+  try {
+    const res = await fetch(`${API_URL}/api/orders?buyer_id=${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    return data.success ? data.data : [];
+  } catch {
+    return [];
+  }
+}
+
 export default async function DashboardHomePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // Fetch buyer stats
-  const { data: orders } = await supabase
-    .from("orders")
-    .select("id, amount_paise, status, created_at, product:products(title)")
-    .eq("buyer_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(5);
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token || "";
 
+  // Fetch data from backend API
+  const [profile, orders] = await Promise.all([
+    fetchProfile(user.id, token),
+    fetchOrders(user.id, token),
+  ]);
+
+  const fullName = profile?.full_name || user.user_metadata?.full_name || "";
+  const shortName = fullName ? fullName.split(" ")[0] : "there";
   const totalOrders = orders?.length || 0;
-  const totalSpent = orders?.reduce((sum, o) => sum + o.amount_paise, 0) || 0;
+  const totalSpent = orders?.reduce((sum: number, o: any) => sum + o.amount_paise, 0) || 0;
 
   return (
     <>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-950">Welcome back, {user.user_metadata?.full_name?.split(" ")[0] || "there"}!</h1>
+        <h1 className="text-2xl font-bold text-slate-950">Welcome back, {shortName}!</h1>
         <p className="text-slate-600 mt-1">Here&apos;s what&apos;s happening with your account</p>
       </div>
 
@@ -99,7 +128,7 @@ export default async function DashboardHomePage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {orders.map((order) => (
+              {orders.map((order: any) => (
                 <div key={order.id} className="flex items-center justify-between p-3 rounded-lg bg-slate-50">
                   <div>
                     <div className="text-sm font-medium text-slate-950">

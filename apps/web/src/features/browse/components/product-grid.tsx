@@ -198,6 +198,7 @@ export function ProductGrid({ searchQuery = "", categoryFilter = "" }: ProductGr
       {filteredProducts.map((product) => (
         <ProductCard
           key={product.id}
+          id={product.id}
           title={product.title}
           description={product.description || ""}
           price={product.price_paise / 100}

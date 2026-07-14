@@ -1,8 +1,6 @@
 "use client";
 import { FadeIn } from "@/shared/components/fade-in";
 
-import { useRef, type ReactNode } from "react";
-import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Github, Code2, TrendingUp } from "lucide-react";
 import { Button } from "@/shared/ui/button";

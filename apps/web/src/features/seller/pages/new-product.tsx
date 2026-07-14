@@ -1,12 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Github, CheckCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Loader2,
+  Github,
+  CheckCircle,
+  Upload,
+  Star,
+  X,
+  Eye,
+} from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Card, CardContent } from "@/shared/ui/card";
+import { Badge } from "@/shared/ui/badge";
 import { createClient } from "@/shared/lib/supabase/client";
 
 const CATEGORIES = [
@@ -20,15 +30,55 @@ const CATEGORIES = [
 
 export default function NewProductPage() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  // Form state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
   const [tags, setTags] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // Handle image selection
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setError("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be less than 5MB");
+      return;
+    }
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+
+    // In production, upload to Supabase Storage or similar
+    // For now, we'll use the preview URL as the image URL
+    setImageUrl(previewUrl);
+  }
+
+  // Remove image
+  function handleRemoveImage() {
+    setImagePreview(null);
+    setImageUrl("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -58,6 +108,7 @@ export default function NewProductPage() {
           price_paise: Math.round(parseFloat(price) * 100),
           category_id: category || undefined,
           github_repo_url: githubUrl || undefined,
+          image_url: imageUrl || undefined,
           tags: tags ? tags.split(",").map((t) => t.trim()) : [],
         }),
       });
@@ -107,134 +158,273 @@ export default function NewProductPage() {
         <p className="text-slate-600 mt-1">Add your code asset to the marketplace</p>
       </div>
 
-      <div className="max-w-2xl">
-        <Card className="border-slate-200">
-          <CardContent className="p-8">
-            {error && (
-              <div className="mb-6 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
-                {error}
-              </div>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Product title
-                </label>
-                <Input
-                  id="title"
-                  placeholder="e.g. Next.js SaaS Starter Kit"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                  className="h-11 border-slate-300 bg-white"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Description
-                </label>
-                <textarea
-                  id="description"
-                  rows={4}
-                  placeholder="Describe what's included, key features, tech stack..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                  className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+      <div className="grid lg:grid-cols-5 gap-8">
+        {/* Left: Form (3 cols) */}
+        <div className="lg:col-span-3">
+          <Card className="border-slate-200">
+            <CardContent className="p-8">
+              {error && (
+                <div className="mb-6 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+                  {error}
+                </div>
+              )}
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Product Image Upload */}
                 <div>
-                  <label htmlFor="price" className="block text-sm font-medium text-slate-700 mb-1.5">
-                    Price (₹)
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                    Product Image
+                  </label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
+
+                  {imagePreview ? (
+                    <div className="relative">
+                      <img
+                        src={imagePreview}
+                        alt="Product preview"
+                        className="w-full h-48 object-cover rounded-lg border border-slate-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full h-48 border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center gap-2 hover:border-slate-400 hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                      <Upload className="w-8 h-8 text-slate-400" />
+                      <span className="text-sm font-medium text-slate-600">Click to upload image</span>
+                      <span className="text-xs text-slate-400">PNG, JPG, GIF up to 5MB</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Product Title */}
+                <div>
+                  <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-1.5">
+                    Product title
                   </label>
                   <Input
-                    id="price"
-                    type="number"
-                    placeholder="499"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
+                    id="title"
+                    placeholder="e.g. Next.js SaaS Starter Kit"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     required
-                    min="49"
                     className="h-11 border-slate-300 bg-white"
                   />
-                  <p className="text-xs text-slate-500 mt-1">Minimum ₹49. You keep 97.5%.</p>
                 </div>
 
+                {/* Description */}
                 <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-slate-700 mb-1.5">
-                    Category
+                  <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1.5">
+                    Description
                   </label>
-                  <select
-                    id="category"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                  <textarea
+                    id="description"
+                    rows={4}
+                    placeholder="Describe what's included, key features, tech stack..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     required
-                    className="w-full h-11 rounded-md border border-slate-300 bg-white px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"
-                  >
-                    <option value="">Select category</option>
-                    {CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="githubUrl" className="block text-sm font-medium text-slate-700 mb-1.5">
-                  GitHub Repository URL
-                </label>
-                <div className="relative">
-                  <Github className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <Input
-                    id="githubUrl"
-                    placeholder="https://github.com/username/repo"
-                    value={githubUrl}
-                    onChange={(e) => setGithubUrl(e.target.value)}
-                    required
-                    className="h-11 border-slate-300 bg-white pl-10"
+                    className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"
                   />
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
-                  Buyers will get access to a private fork of this repo.
-                </p>
-              </div>
 
-              <div>
-                <label htmlFor="tags" className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Tags
-                </label>
-                <Input
-                  id="tags"
-                  placeholder="React, Next.js, TypeScript (comma separated)"
-                  value={tags}
-                  onChange={(e) => setTags(e.target.value)}
-                  className="h-11 border-slate-300 bg-white"
-                />
-              </div>
+                {/* Price + Category */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="price" className="block text-sm font-medium text-slate-700 mb-1.5">
+                      Price (₹)
+                    </label>
+                    <Input
+                      id="price"
+                      type="number"
+                      placeholder="499"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      required
+                      min="49"
+                      className="h-11 border-slate-300 bg-white"
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Minimum ₹49. You keep 97.5%.</p>
+                  </div>
 
-              <div className="flex items-center gap-4 pt-4">
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-slate-950 text-white hover:bg-slate-800"
-                >
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  ) : null}
-                  List Product
-                </Button>
-                <Link href="/seller/products">
-                  <Button type="button" variant="outline" className="border-slate-300 text-slate-700">
-                    Cancel
+                  <div>
+                    <label htmlFor="category" className="block text-sm font-medium text-slate-700 mb-1.5">
+                      Category
+                    </label>
+                    <select
+                      id="category"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      required
+                      className="w-full h-11 rounded-md border border-slate-300 bg-white px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"
+                    >
+                      <option value="">Select category</option>
+                      {CATEGORIES.map((cat) => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* GitHub URL */}
+                <div>
+                  <label htmlFor="githubUrl" className="block text-sm font-medium text-slate-700 mb-1.5">
+                    GitHub Repository URL
+                  </label>
+                  <div className="relative">
+                    <Github className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Input
+                      id="githubUrl"
+                      placeholder="https://github.com/username/repo"
+                      value={githubUrl}
+                      onChange={(e) => setGithubUrl(e.target.value)}
+                      required
+                      className="h-11 border-slate-300 bg-white pl-10"
+                    />
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Buyers will get access to a private fork of this repo.
+                  </p>
+                </div>
+
+                {/* Tags */}
+                <div>
+                  <label htmlFor="tags" className="block text-sm font-medium text-slate-700 mb-1.5">
+                    Tags
+                  </label>
+                  <Input
+                    id="tags"
+                    placeholder="React, Next.js, TypeScript (comma separated)"
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
+                    className="h-11 border-slate-300 bg-white"
+                  />
+                </div>
+
+                {/* Submit */}
+                <div className="flex items-center gap-4 pt-4">
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="bg-slate-950 text-white hover:bg-slate-800"
+                  >
+                    {loading ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    ) : null}
+                    List Product
                   </Button>
-                </Link>
+                  <Link href="/seller/products">
+                    <Button type="button" variant="outline" className="border-slate-300 text-slate-700">
+                      Cancel
+                    </Button>
+                  </Link>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right: Live Preview (2 cols) */}
+        <div className="lg:col-span-2">
+          <div className="sticky top-24">
+            <div className="flex items-center gap-2 mb-4">
+              <Eye className="w-4 h-4 text-slate-500" />
+              <span className="text-sm font-medium text-slate-700">Live Preview</span>
+              <Badge variant="secondary" className="text-[10px] bg-slate-100 border-slate-200">
+                How buyers see it
+              </Badge>
+            </div>
+
+            <Card className="border-slate-200 overflow-hidden">
+              {/* Image Preview */}
+              <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center relative">
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Product preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Github className="w-10 h-10 text-slate-400" />
+                )}
+                {category && (
+                  <Badge
+                    variant="secondary"
+                    className="absolute top-3 left-3 text-[10px] px-2 py-0.5 bg-white/90 border border-slate-200"
+                  >
+                    {category}
+                  </Badge>
+                )}
+                {price && parseInt(price) >= 49 && (
+                  <Badge className="absolute top-3 right-3 text-[10px] px-2 py-0.5 bg-emerald-500 text-white border-0">
+                    Live
+                  </Badge>
+                )}
               </div>
-            </form>
-          </CardContent>
-        </Card>
+
+              <CardContent className="p-4">
+                {/* Title */}
+                <h3 className="font-semibold text-slate-950 text-sm leading-snug line-clamp-2">
+                  {title || "Product Title"}
+                </h3>
+
+                {/* Description */}
+                <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                  {description || "Product description will appear here..."}
+                </p>
+
+                {/* Tags */}
+                {tags && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {tags.split(",").filter(t => t.trim()).slice(0, 3).map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded"
+                      >
+                        {tag.trim()}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Rating Placeholder */}
+                <div className="flex items-center gap-1 mt-3">
+                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                  <span className="text-xs font-medium text-slate-700">0.0</span>
+                  <span className="text-xs text-slate-400">(0)</span>
+                </div>
+
+                {/* Price + Seller */}
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-bold text-slate-950">
+                      {price ? `₹${parseInt(price).toLocaleString()}` : "₹0"}
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-slate-500">by You</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Preview Info */}
+            <p className="text-xs text-slate-400 mt-3 text-center">
+              This is how your product will appear to buyers on the marketplace.
+            </p>
+          </div>
+        </div>
       </div>
     </>
   );

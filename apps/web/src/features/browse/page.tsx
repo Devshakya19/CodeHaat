@@ -5,6 +5,20 @@ import { BrowseNavbar } from "./components/browse-navbar";
 import { ProductGrid } from "./components/product-grid";
 import { Sparkles, TrendingUp, Zap } from "lucide-react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4001";
+
+async function fetchProfile(userId: string, token: string) {
+  try {
+    const res = await fetch(`${API_URL}/api/profile/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch {
+    return null;
+  }
+}
+
 interface BrowsePageProps {
   searchParams: Promise<{ search?: string; category?: string }>;
 }
@@ -18,6 +32,13 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const role = getUserRole(user);
   if (role === ROLES.DEVELOPER) redirect("/seller");
 
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token || "";
+
+  // Fetch profile from backend API
+  const profile = await fetchProfile(user.id, token);
+  const fullName = profile?.full_name || user.user_metadata?.full_name || "";
+
   const params = searchParams ? await searchParams : {};
   const searchQuery = params?.search || "";
   const categoryFilter = params?.category || "";
@@ -26,7 +47,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     <div className="min-h-screen bg-slate-50">
       <BrowseNavbar
         email={user.email!}
-        fullName={user.user_metadata?.full_name}
+        fullName={fullName}
         activeCategory={categoryFilter}
         searchQuery={searchQuery}
       />
@@ -38,7 +59,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
           <div className="relative z-10">
             <h1 className="text-2xl md:text-3xl font-bold mb-2">
-              Welcome back, {user.user_metadata?.full_name?.split(" ")[0] || "there"}!
+              Welcome back, {fullName ? fullName.split(" ")[0] : "there"}!
             </h1>
             <p className="text-slate-300 text-sm md:text-base max-w-lg">
               Discover production-ready code assets from top Indian developers. GitHub delivery, instant access.

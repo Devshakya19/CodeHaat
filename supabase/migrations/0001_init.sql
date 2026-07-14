@@ -291,7 +291,9 @@ CREATE TABLE disputes (
 -- Profiles
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public profiles" ON profiles FOR SELECT USING (true);
+CREATE POLICY "Insert own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "Update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Upsert own profile" ON profiles FOR ALL USING (auth.uid() = id);
 
 -- Categories
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;

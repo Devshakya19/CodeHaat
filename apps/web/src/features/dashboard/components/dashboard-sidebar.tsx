@@ -6,7 +6,6 @@ import { CodeHaatLogo } from "@/shared/components/codehaat-logo";
 import {
   LayoutDashboard,
   ShoppingCart,
-  Heart,
   User,
   Settings,
   LogOut,
@@ -18,6 +17,17 @@ const NAV_ITEMS = [
   { label: "Profile", href: "/dashboard/profile", icon: User },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
+
+function getShortName(fullName?: string, email?: string): string {
+  if (fullName) {
+    const parts = fullName.trim().split(/\s+/);
+    return parts[0]; // First name only
+  }
+  if (email) {
+    return email.split("@")[0];
+  }
+  return "User";
+}
 
 interface DashboardSidebarProps {
   email: string;
@@ -31,6 +41,7 @@ export function DashboardSidebar({
   avatarUrl,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const shortName = getShortName(fullName, email);
 
   return (
     <>
@@ -61,19 +72,22 @@ export function DashboardSidebar({
         </nav>
 
         <div className="px-4 py-4 border-t border-slate-200">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-700">
+          <Link
+            href="/dashboard/profile"
+            className="flex items-center gap-3 mb-3 p-2 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            <div className="w-9 h-9 rounded-full bg-slate-950 flex items-center justify-center text-sm font-bold text-white overflow-hidden">
               {avatarUrl ? (
                 <img src={avatarUrl} alt="" className="w-9 h-9 rounded-full object-cover" />
               ) : (
-                (fullName || email)?.[0]?.toUpperCase() || "U"
+                shortName[0]?.toUpperCase() || "U"
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-slate-950 truncate">{fullName || "User"}</div>
+              <div className="text-sm font-medium text-slate-950 truncate">{shortName}</div>
               <div className="text-xs text-slate-500 truncate">{email}</div>
             </div>
-          </div>
+          </Link>
           <form action="/api/auth/logout" method="post">
             <button
               type="submit"

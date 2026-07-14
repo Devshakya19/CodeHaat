@@ -1,21 +1,34 @@
 import { createClient } from "@/shared/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Plus, Package, ExternalLink } from "lucide-react";
+import { Plus, Package } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4001";
+
+async function fetchSellerProducts(token: string) {
+  try {
+    const res = await fetch(`${API_URL}/api/seller/products`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    return data.success ? data.data : [];
+  } catch {
+    return [];
+  }
+}
 
 export default async function ProductsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: products } = await supabase
-    .from("products")
-    .select("*, category:categories(name)")
-    .eq("seller_id", user.id)
-    .order("created_at", { ascending: false });
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token || "";
+
+  const products = await fetchSellerProducts(token);
 
   return (
     <>
@@ -40,8 +53,7 @@ export default async function ProductsPage() {
             </div>
             <h3 className="text-lg font-semibold text-slate-950 mb-2">No products yet</h3>
             <p className="text-sm text-slate-600 mb-6 max-w-md mx-auto">
-              Start selling by listing your first product. Connect your GitHub repo, set a price,
-              and you&apos;re live in minutes.
+              Start selling by listing your first product.
             </p>
             <Link href="/seller/products/new">
               <Button className="bg-slate-950 text-white hover:bg-slate-800">
@@ -53,7 +65,7 @@ export default async function ProductsPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {products.map((product) => (
+          {products.map((product: any) => (
             <Card key={product.id} className="border-slate-200 hover:border-slate-300 transition-colors">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
