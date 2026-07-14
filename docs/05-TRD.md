@@ -10,7 +10,7 @@
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| Next.js | 15+ | Framework |
+| Next.js | 16+ | Framework |
 | React | 19 | UI library |
 | TypeScript | 5+ | Type safety |
 | Tailwind CSS | 4 | Styling |
@@ -24,8 +24,8 @@
 {
   "next": "^16.1.1",
   "react": "^19.0.0",
-  "@supabase/ssr": "^0.12.1",
-  "@supabase/supabase-js": "^2.110.3",
+  "@supabase/ssr": "^0.12.2",
+  "@supabase/supabase-js": "^2.110.5",
   "framer-motion": "^12.23.2",
   "lucide-react": "^0.525.0",
   "sonner": "^2.0.6"
@@ -118,8 +118,8 @@ GET    /api/analytics/user/:userId      # User behavior analytics
 
 | Technology | Purpose |
 |------------|---------|
-| TypeScript | Language |
-| ws / Socket.io | WebSocket library |
+| JavaScript | Language |
+| ws | WebSocket library |
 | Redis | Pub/Sub for events |
 
 ### WebSocket Events

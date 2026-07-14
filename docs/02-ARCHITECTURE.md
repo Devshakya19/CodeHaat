@@ -26,7 +26,7 @@
                           ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                2. CORE ENGINE (Rust)                             │
-│                Actix-Web / Axum                                  │
+│                Actix-Web 4                                       │
 │                Port: 4001                                       │
 │                                                                 │
 │  • JWT token verification                                       │
@@ -36,11 +36,9 @@
 │  • Transaction processing                                       │
 │  • Database read/write (via Supabase client)                    │
 │                                                                 │
-│  Publishes events to Redis:                                     │
-│    → "repo_transfer_needed"                                     │
-│    → "user_activity"                                            │
+│  NOTE: Redis integration planned for Phase 2                    │
 └───────┬─────────────────────────┬───────────────────────────────┘
-        │ Redis Pub/Sub           │ Redis Pub/Sub
+        │ (future: Redis)         │ Redis
         ▼                         ▼
 ┌───────────────────┐   ┌─────────────────────────────────────────┐
 │  3. AI SERVICE    │   │     4. INFRASTRUCTURE WORKER (Go)       │

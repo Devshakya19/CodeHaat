@@ -377,7 +377,33 @@ Client marks as read (optional)
 
 ---
 
-## 5. State Diagrams
+## 5. Company & Legal Page Flows
+
+### Company Pages
+
+| Route | Content | Purpose |
+|-------|---------|---------|
+| `/about` | Company story, mission, values | About CodeHaat |
+| `/blog` | Blog posts with categories | Content marketing |
+| `/careers` | Job openings, company perks | Recruitment |
+| `/contact` | Contact info + form | Customer support |
+| `/press` | Brand assets, key facts | Media relations |
+
+### Legal Pages
+
+| Route | Content | Purpose |
+|-------|---------|---------|
+| `/privacy` | Privacy policy | Data protection compliance |
+| `/terms` | Terms of service | Platform rules |
+| `/refund` | Refund policy | Purchase protection |
+| `/license` | License agreement | Code usage rights |
+| `/cookies` | Cookie policy | Cookie compliance |
+
+All Company and Legal pages use the shared `StaticPageLayout` component for consistent header/footer.
+
+---
+
+## 6. State Diagrams
 
 ### Order Status
 

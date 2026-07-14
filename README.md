@@ -109,10 +109,10 @@ codehaat/
 │           │   ├── auth/             # Authentication pages
 │           │   ├── browse/           # Buyer marketplace
 │           │   ├── products/         # Product detail
-│           │   ├── dashboard/        # Buyer dashboard
 │           │   ├── seller/           # Seller dashboard
 │           │   ├── landing/          # Marketing page
-│           │   └── developer/        # Seller marketing
+│           │   ├── developer/        # Seller marketing
+│           │   └── pages/            # Company & Legal pages
 │           ├── shared/               # Shared components & utils
 │           └── app/                   # Next.js routes
 │
@@ -271,10 +271,8 @@ Run `supabase/FRESH_DATABASE.sql` in Supabase SQL Editor for a fresh database.
 ### Buyer Pages (role: user)
 | Route | Page |
 |-------|------|
-| `/dashboard` | Buyer home |
-| `/dashboard/profile` | Edit profile |
-| `/dashboard/purchases` | Order history |
-| `/dashboard/settings` | Account settings |
+| `/browse` | Product browsing home |
+| `/products/[id]` | Product detail page |
 
 ### Seller Pages (role: developer)
 | Route | Page |
@@ -285,6 +283,24 @@ Run `supabase/FRESH_DATABASE.sql` in Supabase SQL Editor for a fresh database.
 | `/seller/profile` | Seller profile |
 | `/seller/settings` | Seller settings |
 | `/seller/earnings` | Earnings (coming soon) |
+
+### Company Pages
+| Route | Page |
+|-------|------|
+| `/about` | About CodeHaat |
+| `/blog` | Blog posts |
+| `/careers` | Career opportunities |
+| `/contact` | Contact form |
+| `/press` | Press kit & brand assets |
+
+### Legal Pages
+| Route | Page |
+|-------|------|
+| `/privacy` | Privacy Policy |
+| `/terms` | Terms of Service |
+| `/refund` | Refund Policy |
+| `/license` | License Agreement |
+| `/cookies` | Cookie Policy |
 
 ---
 

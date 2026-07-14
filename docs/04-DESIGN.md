@@ -103,6 +103,7 @@
 | Input | `shared/ui/input.tsx` | Forms, search |
 | Sheet | `shared/ui/sheet.tsx` | Mobile navigation |
 | Separator | `shared/ui/separator.tsx` | Dividers |
+| Toaster | `shared/ui/toaster.tsx` | Toast notifications |
 
 ### Custom Components
 
@@ -110,6 +111,7 @@
 |-----------|------|-------|
 | CodeHaatLogo | `shared/components/codehaat-logo.tsx` | Navigation, footer |
 | FadeIn | `shared/components/fade-in.tsx` | Scroll animations |
+| GithubIcon | `shared/components/github-icon.tsx` | GitHub branding (custom SVG) |
 
 ---
 
