@@ -1,4 +1,5 @@
-import { Terminal, Github, Globe } from "lucide-react";
+import { Terminal, Globe } from "lucide-react";
+import { GithubIcon } from "@/shared/components/github-icon";
 import { Badge } from "@/shared/ui/badge";
 
 const FOOTER_LINKS = {
@@ -51,7 +52,7 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-3 mt-6">
               {[
-                { label: "GitHub", icon: Github },
+                { label: "GitHub", icon: GithubIcon },
                 { label: "Twitter", icon: Globe },
               ].map((social) => (
                 <a

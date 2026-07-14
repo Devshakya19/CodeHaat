@@ -1,8 +1,9 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 import { FadeIn } from "@/shared/components/fade-in";
 
 import Link from "next/link";
-import { ArrowRight, Github, Code2, TrendingUp } from "lucide-react";
+import { ArrowRight, Code2, TrendingUp } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 
@@ -53,7 +54,7 @@ export function DevHero() {
               <span>2.5% commission</span>
             </div>
             <div className="flex items-center gap-2">
-              <Github className="w-4 h-4" />
+              <GithubIcon className="w-4 h-4" />
               <span>GitHub delivery</span>
             </div>
             <div className="flex items-center gap-2">

@@ -1,8 +1,9 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 import { FadeIn } from "@/shared/components/fade-in";
 
 import Link from "next/link";
-import { Check, Github, FileCode2 } from "lucide-react";
+import { Check, FileCode2 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent } from "@/shared/ui/card";
@@ -53,7 +54,7 @@ export function SellerSection() {
                 size="lg"
                 className="mt-8 shadow-lg shadow-primary/25 hover:shadow-primary/35"
               >
-                <Github className="mr-2 w-5 h-5" />
+                <GithubIcon className="mr-2 w-5 h-5" />
                 Start Selling Today
               </Button>
             </Link>

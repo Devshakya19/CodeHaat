@@ -1,4 +1,5 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -8,7 +9,6 @@ import {
   Star,
   ShoppingCart,
   ExternalLink,
-  Github,
   Clock,
   Eye,
   Loader2,
@@ -151,7 +151,7 @@ export default function ProductDetailPage() {
           {/* Left: Product Info */}
           <div className="lg:col-span-2 space-y-6">
             <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center relative overflow-hidden">
-              <Github className="w-16 h-16 text-slate-400" />
+              <GithubIcon className="w-16 h-16 text-slate-400" />
               {discount > 0 && (
                 <Badge className="absolute top-4 right-4 bg-emerald-500 text-white border-0">
                   {discount}% OFF
@@ -287,7 +287,7 @@ export default function ProductDetailPage() {
                           rel="noopener noreferrer"
                           className="text-xs text-slate-500 hover:text-slate-700 flex items-center gap-1"
                         >
-                          <Github className="w-3 h-3" />@{product.seller.github_username}
+                          <GithubIcon className="w-3 h-3" />@{product.seller.github_username}
                         </a>
                       )}
                     </div>
@@ -343,7 +343,7 @@ export default function ProductDetailPage() {
                       rel="noopener noreferrer"
                       className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
                     >
-                      <Github className="w-4 h-4" />
+                      <GithubIcon className="w-4 h-4" />
                       View on GitHub
                       <ExternalLink className="w-3 h-3" />
                     </a>

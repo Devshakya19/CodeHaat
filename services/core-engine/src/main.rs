@@ -1,5 +1,5 @@
 use actix_web::{web, App, HttpServer, middleware::Logger};
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use std::env;
 
 mod handlers;

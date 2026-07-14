@@ -1,4 +1,5 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 import { FadeIn } from "@/shared/components/fade-in";
 
 import { Layers, Lock, GitBranch, Star, Check, X } from "lucide-react";

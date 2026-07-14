@@ -1,7 +1,8 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 import { FadeIn } from "@/shared/components/fade-in";
 
-import { Search, Wallet, Github } from "lucide-react";
+import { Search, Wallet } from "lucide-react";
 
 
 const STEPS = [
@@ -19,7 +20,7 @@ const STEPS = [
   },
   {
     step: "03",
-    icon: Github,
+    icon: GithubIcon,
     title: "Receive GitHub repo",
     description: "Get a private repository with full commit history delivered to your account.",
   },

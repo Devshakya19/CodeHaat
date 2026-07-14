@@ -1,4 +1,5 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";

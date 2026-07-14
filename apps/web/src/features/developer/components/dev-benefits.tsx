@@ -1,10 +1,10 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 import { FadeIn } from "@/shared/components/fade-in";
 
 import { Badge } from "@/shared/ui/badge";
 import {
   Percent,
-  Github,
   BarChart3,
   Zap,
   Shield,
@@ -19,7 +19,7 @@ const BENEFITS = [
     description: "Keep 97.5% of every sale. The lowest commission in the market — CodeCanyon takes 50%.",
   },
   {
-    icon: Github,
+    icon: GithubIcon,
     title: "GitHub Delivery",
     description: "Buyers get access directly via GitHub. No .zip files, no manual distribution.",
   },

@@ -1,9 +1,10 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Eye, EyeOff, Github, Loader2, Check } from "lucide-react";
+import { Eye, EyeOff, Loader2, Check } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Card, CardContent } from "@/shared/ui/card";
@@ -206,7 +207,7 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full h-11 border-slate-300 text-slate-700 hover:bg-slate-50"
           >
-            <Github className="w-4 h-4 mr-2" />
+            <GithubIcon className="w-4 h-4 mr-2" />
             GitHub
           </Button>
 

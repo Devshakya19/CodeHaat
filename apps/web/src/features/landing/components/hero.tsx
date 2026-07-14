@@ -1,4 +1,5 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 import { FadeIn } from "@/shared/components/fade-in";
 
 import { useRef } from "react";
@@ -6,7 +7,6 @@ import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   ArrowRight,
-  Github,
   Check,
   ChevronRight,
   Search,
@@ -68,7 +68,7 @@ export function Hero() {
               </Link>
               <Link href="/developer">
                 <Button size="lg" variant="outline" className="h-12 px-8 text-base font-semibold border-slate-300 text-slate-950 rounded-full hover:bg-slate-100">
-                  <Github className="mr-2 w-5 h-5" />
+                  <GithubIcon className="mr-2 w-5 h-5" />
                   Start Selling
                 </Button>
               </Link>

@@ -1,13 +1,14 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 import { FadeIn } from "@/shared/components/fade-in";
 
-import { Github, Eye, Shield, Wallet, GitBranch, Lock } from "lucide-react";
+import { Eye, Shield, Wallet, GitBranch, Lock } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui/card";
 
 
 const FEATURES = [
   {
-    icon: Github,
+    icon: GithubIcon,
     title: "GitHub Repo Delivery",
     description: "Buyers get a private repo in GitHub with full commit history and collaboration tools.",
   },

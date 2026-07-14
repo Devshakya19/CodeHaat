@@ -1,4 +1,5 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -6,7 +7,6 @@ import Link from "next/link";
 import {
   ArrowLeft,
   Loader2,
-  Github,
   CheckCircle,
   Upload,
   Star,
@@ -285,7 +285,7 @@ export default function NewProductPage() {
                     GitHub Repository URL
                   </label>
                   <div className="relative">
-                    <Github className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <GithubIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <Input
                       id="githubUrl"
                       placeholder="https://github.com/username/repo"
@@ -358,7 +358,7 @@ export default function NewProductPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <Github className="w-10 h-10 text-slate-400" />
+                  <GithubIcon className="w-10 h-10 text-slate-400" />
                 )}
                 {category && (
                   <Badge

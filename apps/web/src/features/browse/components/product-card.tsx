@@ -1,7 +1,8 @@
 "use client";
+import { GithubIcon } from "@/shared/components/github-icon";
 
 import Link from "next/link";
-import { Star, Github } from "lucide-react";
+import { Star } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 
@@ -36,7 +37,7 @@ export function ProductCard({
       <Card className="group border border-slate-200 hover:border-slate-950 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden h-full">
         {/* Product Image Placeholder */}
         <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center relative">
-          <Github className="w-10 h-10 text-slate-400" />
+          <GithubIcon className="w-10 h-10 text-slate-400" />
           <Badge
             variant="secondary"
             className="absolute top-3 left-3 text-[10px] px-2 py-0.5 bg-white/90 border border-slate-200"
