@@ -1,33 +1,11 @@
 "use client";
+import { FadeIn } from "@/shared/components/fade-in";
 
 import { useRef, type ReactNode } from "react";
 import { motion, useInView } from "framer-motion";
 import { Star } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui/card";
 
-function FadeIn({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 const TESTIMONIALS = [
   {

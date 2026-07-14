@@ -54,3 +54,27 @@ server.log
 
 # mimocode
 .mimocode/
+
+# Rust
+target/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+.venv/
+venv/
+
+# Docker
+docker-compose.override.yml

@@ -1,11 +1,15 @@
 import { createClient } from "@/shared/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getUserRole, ROLES } from "@/shared/lib/roles";
-import { BrowseNavbar } from "@/features/browse/components/browse-navbar";
-import { ProductGrid } from "@/features/browse/components/product-grid";
+import { BrowseNavbar } from "./components/browse-navbar";
+import { ProductGrid } from "./components/product-grid";
 import { Sparkles, TrendingUp, Zap } from "lucide-react";
 
-export default async function BrowsePage() {
+interface BrowsePageProps {
+  searchParams: Promise<{ search?: string; category?: string }>;
+}
+
+export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -14,11 +18,17 @@ export default async function BrowsePage() {
   const role = getUserRole(user);
   if (role === ROLES.DEVELOPER) redirect("/seller");
 
+  const params = searchParams ? await searchParams : {};
+  const searchQuery = params?.search || "";
+  const categoryFilter = params?.category || "";
+
   return (
     <div className="min-h-screen bg-slate-50">
       <BrowseNavbar
         email={user.email!}
         fullName={user.user_metadata?.full_name}
+        activeCategory={categoryFilter}
+        searchQuery={searchQuery}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -53,23 +63,21 @@ export default async function BrowsePage() {
         {/* Section Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-bold text-slate-950">Trending Products</h2>
-            <p className="text-sm text-slate-500 mt-1">Most popular this week</p>
+            <h2 className="text-xl font-bold text-slate-950">
+              {searchQuery
+                ? `Results for "${searchQuery}"`
+                : categoryFilter
+                ? `${categoryFilter.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}`
+                : "Trending Products"}
+            </h2>
+            <p className="text-sm text-slate-500 mt-1">
+              {searchQuery || categoryFilter ? "Filtered results" : "Most popular this week"}
+            </p>
           </div>
-          <button className="text-sm font-medium text-slate-600 hover:text-slate-950 transition-colors">
-            View all →
-          </button>
         </div>
 
         {/* Product Grid */}
-        <ProductGrid />
-
-        {/* Load More */}
-        <div className="mt-10 text-center">
-          <button className="px-6 py-2.5 text-sm font-medium text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors">
-            Load More Products
-          </button>
-        </div>
+        <ProductGrid searchQuery={searchQuery} categoryFilter={categoryFilter} />
       </main>
 
       {/* Footer */}

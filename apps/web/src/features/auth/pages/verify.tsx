@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, Mail, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/shared/ui/button";
@@ -8,6 +9,7 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { createClient } from "@/shared/lib/supabase/client";
 
 export default function VerifyPage() {
+  const router = useRouter();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const supabase = createClient();
 
@@ -15,6 +17,7 @@ export default function VerifyPage() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") {
         setStatus("success");
+        setTimeout(() => router.push("/browse"), 2000);
       }
     });
 

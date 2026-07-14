@@ -1,4 +1,5 @@
 "use client";
+import { FadeIn } from "@/shared/components/fade-in";
 
 import { useRef, type ReactNode } from "react";
 import Link from "next/link";
@@ -6,29 +7,6 @@ import { motion, useInView } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 
-function FadeIn({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 export function FinalCTA() {
   return (
@@ -60,13 +38,15 @@ export function FinalCTA() {
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-13 px-8 text-base font-semibold border-white text-white rounded-full hover:bg-white/10"
-                >
-                  Become a Seller
-                </Button>
+                <Link href="/developer">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="h-13 px-8 text-base font-semibold border-white text-white rounded-full hover:bg-white/10"
+                  >
+                    Become a Seller
+                  </Button>
+                </Link>
               </div>
             </FadeIn>
             <FadeIn delay={0.3}>

@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Github } from "lucide-react";
+import { ArrowLeft, Loader2, Github, CheckCircle } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Card, CardContent } from "@/shared/ui/card";
+import { createClient } from "@/shared/lib/supabase/client";
 
 const CATEGORIES = [
   "Web Templates",
@@ -17,7 +19,10 @@ const CATEGORIES = [
 ];
 
 export default function NewProductPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -28,11 +33,64 @@ export default function NewProductPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    // TODO: Implement product creation with Supabase
-    setTimeout(() => {
+    setError("");
+
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        setError("You must be logged in to create a product");
+        setLoading(false);
+        return;
+      }
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4001";
+      const response = await fetch(`${apiUrl}/api/seller/products`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          price_paise: Math.round(parseFloat(price) * 100),
+          category_id: category || undefined,
+          github_repo_url: githubUrl || undefined,
+          tags: tags ? tags.split(",").map((t) => t.trim()) : [],
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSuccess(true);
+        setTimeout(() => router.push("/seller/products"), 2000);
+      } else {
+        setError(result.error || "Failed to create product");
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
       setLoading(false);
-      alert("Product creation will be implemented with database.");
-    }, 1000);
+    }
+  }
+
+  if (success) {
+    return (
+      <div className="w-full max-w-2xl mx-auto mt-8">
+        <Card className="border-slate-200">
+          <CardContent className="p-12 text-center">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-emerald-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-950 mb-2">Product Created!</h2>
+            <p className="text-slate-600">Your product has been listed. Redirecting to products...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -52,6 +110,11 @@ export default function NewProductPage() {
       <div className="max-w-2xl">
         <Card className="border-slate-200">
           <CardContent className="p-8">
+            {error && (
+              <div className="mb-6 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
+                {error}
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-1.5">

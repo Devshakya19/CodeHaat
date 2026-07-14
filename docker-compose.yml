@@ -1,0 +1,98 @@
+services:
+  # Redis - Cache & Job Queue
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Frontend - Next.js
+  frontend:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: https://jarghrxmeknhlclzirfj.supabase.co
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphcmdocnhtZWtuaGxjbHppcmZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4MzIxNDAsImV4cCI6MjA5OTQwODE0MH0.MQJe1HDpTyE2--ztHq4jdRVoo1smbtcNOT_O7nqGzdk
+        NEXT_PUBLIC_API_URL: http://core-engine:4001
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_SUPABASE_URL=https://jarghrxmeknhlclzirfj.supabase.co
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphcmdocnhtZWtuaGxjbHppcmZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4MzIxNDAsImV4cCI6MjA5OTQwODE0MH0.MQJe1HDpTyE2--ztHq4jdRVoo1smbtcNOT_O7nqGzdk
+      - NEXT_PUBLIC_API_URL=http://core-engine:4001
+    depends_on:
+      - core-engine
+
+  # Core Engine - Rust (Main API Gateway)
+  core-engine:
+    build:
+      context: ./services/core-engine
+      dockerfile: Dockerfile
+    ports:
+      - "4001:4001"
+    env_file:
+      - ./services/core-engine/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # AI Service - Python (Recommendations & Search)
+  ai-service:
+    build:
+      context: ./services/ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "4002:4002"
+    env_file:
+      - ./services/ai-service/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Infra Worker - Go (Background Jobs & GitHub)
+  infra-worker:
+    build:
+      context: ./services/infra-worker
+      dockerfile: Dockerfile
+    ports:
+      - "4003:4003"
+    env_file:
+      - ./services/infra-worker/.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # Real-Time Service - Node.js (WebSocket)
+  realtime-service:
+    build:
+      context: ./services/realtime-service
+      dockerfile: Dockerfile
+    ports:
+      - "4004:4004"
+    env_file:
+      - ./services/realtime-service/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis_data:

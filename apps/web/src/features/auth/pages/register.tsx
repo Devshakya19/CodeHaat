@@ -37,7 +37,7 @@ export default function RegisterPage() {
       password,
       options: {
         data: { full_name: fullName, role: "user" },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/api/auth/callback`,
       },
     });
 
@@ -56,7 +56,7 @@ export default function RegisterPage() {
     await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/api/auth/callback`,
       },
     });
   }

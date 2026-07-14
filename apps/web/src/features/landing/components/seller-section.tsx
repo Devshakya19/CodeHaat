@@ -1,4 +1,5 @@
 "use client";
+import { FadeIn } from "@/shared/components/fade-in";
 
 import { useRef, type ReactNode } from "react";
 import Link from "next/link";
@@ -8,36 +9,6 @@ import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent } from "@/shared/ui/card";
 
-function FadeIn({
-  children,
-  delay = 0,
-  direction = "up",
-  className = "",
-}: {
-  children: ReactNode;
-  delay?: number;
-  direction?: "up" | "left" | "right";
-  className?: string;
-}) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  const dir = {
-    up: { y: 20, x: 0 },
-    left: { y: 0, x: 20 },
-    right: { y: 0, x: -20 },
-  };
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, ...dir[direction] }}
-      animate={inView ? { opacity: 1, y: 0, x: 0 } : {}}
-      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 const SELLER_PERKS = [
   "Keep 97.5% of every sale — lowest commission in the market",

@@ -40,7 +40,7 @@ export default function DeveloperRegisterPage() {
           full_name: fullName,
           role: "developer",
         },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/api/auth/callback`,
       },
     });
 
@@ -59,7 +59,7 @@ export default function DeveloperRegisterPage() {
     await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/api/auth/callback`,
       },
     });
   }

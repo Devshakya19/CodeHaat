@@ -1,14 +1,35 @@
 import { createClient } from "@/shared/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Package, TrendingUp, DollarSign, Plus } from "lucide-react";
+import { Package, TrendingUp, DollarSign, Plus, BarChart3, Settings } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
+import { getUserRole, ROLES } from "@/shared/lib/roles";
 
-export default async function SellerDashboardPage() {
+export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  const role = getUserRole(user);
+  if (role !== ROLES.DEVELOPER) redirect("/browse");
+
+  // Fetch seller stats
+  const { data: products } = await supabase
+    .from("products")
+    .select("id, status, sales_count, price_paise")
+    .eq("seller_id", user.id);
+
+  const { data: orders } = await supabase
+    .from("orders")
+    .select("id, amount_paise, seller_amount_paise, status")
+    .eq("seller_id", user.id)
+    .eq("status", "completed");
+
+  const totalProducts = products?.length || 0;
+  const activeProducts = products?.filter((p) => p.status === "active").length || 0;
+  const totalSales = orders?.length || 0;
+  const totalRevenue = orders?.reduce((sum, o) => sum + o.seller_amount_paise, 0) || 0;
 
   return (
     <>
@@ -19,7 +40,7 @@ export default async function SellerDashboardPage() {
             Welcome back, {user.user_metadata?.full_name || user.email}
           </p>
         </div>
-        <Link href="/seller/products">
+        <Link href="/seller/products/new">
           <Button className="bg-slate-950 text-white hover:bg-slate-800">
             <Plus className="w-4 h-4 mr-2" />
             List Product
@@ -36,7 +57,7 @@ export default async function SellerDashboardPage() {
               </div>
               <div>
                 <div className="text-sm text-slate-500">Total Products</div>
-                <div className="text-2xl font-bold text-slate-950">0</div>
+                <div className="text-2xl font-bold text-slate-950">{totalProducts}</div>
               </div>
             </div>
           </CardContent>
@@ -50,7 +71,7 @@ export default async function SellerDashboardPage() {
               </div>
               <div>
                 <div className="text-sm text-slate-500">Total Sales</div>
-                <div className="text-2xl font-bold text-slate-950">0</div>
+                <div className="text-2xl font-bold text-slate-950">{totalSales}</div>
               </div>
             </div>
           </CardContent>
@@ -64,7 +85,7 @@ export default async function SellerDashboardPage() {
               </div>
               <div>
                 <div className="text-sm text-slate-500">Revenue</div>
-                <div className="text-2xl font-bold text-slate-950">₹0</div>
+                <div className="text-2xl font-bold text-slate-950">₹{(totalRevenue / 100).toLocaleString()}</div>
               </div>
             </div>
           </CardContent>
@@ -78,11 +99,50 @@ export default async function SellerDashboardPage() {
               </div>
               <div>
                 <div className="text-sm text-slate-500">You Keep (97.5%)</div>
-                <div className="text-2xl font-bold text-emerald-600">₹0</div>
+                <div className="text-2xl font-bold text-emerald-600">₹{(totalRevenue * 0.975 / 100).toLocaleString()}</div>
               </div>
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mt-8 grid sm:grid-cols-3 gap-4">
+        <Link href="/seller/products">
+          <Card className="border-slate-200 hover:border-slate-950 hover:shadow-lg transition-all cursor-pointer">
+            <CardContent className="p-5 flex items-center gap-4">
+              <Package className="w-5 h-5 text-slate-600" />
+              <div>
+                <div className="font-semibold text-slate-950 text-sm">My Products</div>
+                <div className="text-xs text-slate-500">{activeProducts} active</div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/seller/earnings">
+          <Card className="border-slate-200 hover:border-slate-950 hover:shadow-lg transition-all cursor-pointer">
+            <CardContent className="p-5 flex items-center gap-4">
+              <BarChart3 className="w-5 h-5 text-slate-600" />
+              <div>
+                <div className="font-semibold text-slate-950 text-sm">Earnings</div>
+                <div className="text-xs text-slate-500">View analytics</div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/seller/settings">
+          <Card className="border-slate-200 hover:border-slate-950 hover:shadow-lg transition-all cursor-pointer">
+            <CardContent className="p-5 flex items-center gap-4">
+              <Settings className="w-5 h-5 text-slate-600" />
+              <div>
+                <div className="font-semibold text-slate-950 text-sm">Settings</div>
+                <div className="text-xs text-slate-500">Manage account</div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </>
   );

@@ -1,4 +1,5 @@
 "use client";
+import { FadeIn } from "@/shared/components/fade-in";
 
 import { useRef, type ReactNode } from "react";
 import Link from "next/link";
@@ -17,29 +18,6 @@ import {
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 
-function FadeIn({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 export function Hero() {
   const ref = useRef(null);
@@ -88,10 +66,12 @@ export function Hero() {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="h-12 px-8 text-base font-semibold border-slate-300 text-slate-950 rounded-full hover:bg-slate-100">
-                <Github className="mr-2 w-5 h-5" />
-                Start Selling
-              </Button>
+              <Link href="/developer">
+                <Button size="lg" variant="outline" className="h-12 px-8 text-base font-semibold border-slate-300 text-slate-950 rounded-full hover:bg-slate-100">
+                  <Github className="mr-2 w-5 h-5" />
+                  Start Selling
+                </Button>
+              </Link>
             </div>
           </FadeIn>
 
