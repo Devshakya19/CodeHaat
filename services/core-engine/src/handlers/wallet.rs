@@ -22,8 +22,8 @@ pub async fn get_balance(
 }
 
 pub async fn topup(
-    state: web::Data<AppState>,
-    body: web::Json<TopupRequest>,
+    _state: web::Data<AppState>,
+    _body: web::Json<TopupRequest>,
 ) -> HttpResponse {
     // TODO: Implement Razorpay integration
     // For now, return a placeholder

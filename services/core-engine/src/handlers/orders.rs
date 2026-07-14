@@ -3,8 +3,8 @@ use crate::services::{AppState, ApiResponse, supabase::SupabaseClient};
 use crate::models::{Order, CreateOrderRequest};
 
 pub async fn create_order(
-    state: web::Data<AppState>,
-    body: web::Json<CreateOrderRequest>,
+    _state: web::Data<AppState>,
+    _body: web::Json<CreateOrderRequest>,
 ) -> HttpResponse {
     // TODO: Implement order creation with Razorpay
     HttpResponse::Ok().json(ApiResponse::<()> {

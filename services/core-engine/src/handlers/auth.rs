@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::services::{AppState, ApiResponse};
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct VerifyRequest {
     pub token: String,
 }
@@ -15,8 +16,8 @@ pub struct VerifyResponse {
 }
 
 pub async fn verify_token(
-    state: web::Data<AppState>,
-    body: web::Json<VerifyRequest>,
+    _state: web::Data<AppState>,
+    _body: web::Json<VerifyRequest>,
 ) -> HttpResponse {
     // TODO: Verify JWT token against Supabase
     // For now, return a placeholder

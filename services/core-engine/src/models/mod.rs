@@ -44,6 +44,7 @@ pub struct Product {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct Category {
     pub id: Uuid,
     pub name: String,
@@ -68,6 +69,7 @@ pub struct Wallet {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct WalletTransaction {
     pub id: Uuid,
     pub wallet_user_id: Uuid,

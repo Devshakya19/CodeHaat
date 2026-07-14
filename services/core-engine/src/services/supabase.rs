@@ -3,12 +3,14 @@ use serde::{Deserialize, Serialize};
 use crate::services::AppState;
 
 #[derive(Debug, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct SupabaseResponse<T> {
     pub data: Option<T>,
     pub error: Option<SupabaseError>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct SupabaseError {
     pub message: String,
     pub code: Option<String>,
