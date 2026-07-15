@@ -43,7 +43,7 @@ jobs:
               if (path.startsWith('services/ai-service/')) labels.push('ai-service');
               if (path.startsWith('services/infra-worker/')) labels.push('infra-worker');
               if (path.startsWith('services/realtime-service/')) labels.push('realtime');
-              if (path.startsWith('supabase/')) labels.push('database');
+              if (path.startsWith('sql/')) labels.push('database');
               if (path.startsWith('.github/')) labels.push('ci-cd');
               if (path.startsWith('docs/')) labels.push('documentation');
               if (path.includes('package.json') || path.includes('Cargo.toml') || path.includes('go.mod')) labels.push('dependencies');
