@@ -135,7 +135,7 @@ jobs:
 
       - name: Build Go code
         working-directory: services/infra-worker
-        run: go build ./...
+        run: go build -o /dev/null ./...
 
       - name: Run Go tests
         working-directory: services/infra-worker

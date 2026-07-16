@@ -6,6 +6,7 @@ use crate::services::ApiResponse;
 
 #[derive(Deserialize)]
 pub struct PresignRequest {
+    #[allow(dead_code)]
     pub filename: String,
     pub content_type: String,
     pub purpose: String,

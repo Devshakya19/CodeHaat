@@ -12,6 +12,7 @@ pub struct Profile {
     pub avatar_url: Option<String>,
     pub github_username: Option<String>,
     #[serde(skip_serializing)]
+    #[allow(dead_code)]
     pub github_access_token: Option<String>,
     pub website: Option<String>,
     pub location: Option<String>,

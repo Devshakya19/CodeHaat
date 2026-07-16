@@ -9,6 +9,7 @@ pub struct RegisterRequest {
     pub email: String,
     pub password: String,
     pub full_name: String,
+    #[allow(dead_code)]
     pub role: Option<String>,
 }
 
