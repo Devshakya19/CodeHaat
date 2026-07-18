@@ -2,14 +2,17 @@ import { NextResponse } from "next/server";
 
 const RUST_BACKEND = process.env.CORE_ENGINE_URL || "http://localhost:4001";
 
-function setAuthCookie(response: NextResponse, token: string) {
-  const isProduction = process.env.NODE_ENV === "production";
+function setAuthCookie(response: NextResponse, request: Request, token: string) {
+  // Detect HTTPS from x-forwarded-proto (reverse proxy) or request URL
+  const proto = request.headers.get("x-forwarded-proto") || new URL(request.url).protocol.replace(":", "");
+  const isSecure = proto === "https";
+
   response.cookies.set("codehaat_token", token, {
     httpOnly: true,
-    secure: isProduction,
+    secure: isSecure,
     sameSite: "lax",
     path: "/",
-    maxAge: 86400, // 24h — matches JWT expiry
+    maxAge: 86400,
   });
 }
 
@@ -37,7 +40,7 @@ export async function POST(request: Request) {
       data: { user: data.data.user },
     });
 
-    setAuthCookie(response, data.data.token);
+    setAuthCookie(response, request, data.data.token);
     return response;
   } catch (error) {
     return NextResponse.json(

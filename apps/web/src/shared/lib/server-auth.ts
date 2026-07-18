@@ -27,6 +27,7 @@ function getSigningKey(): Uint8Array {
 export interface TokenClaims {
   sub: string;    // user UUID
   email: string;
+  full_name: string | null;
   role: string;   // "user" | "developer"
   exp: number;
   iat: number;
@@ -52,6 +53,7 @@ export async function verifyToken(
     return {
       sub: payload.sub as string,
       email: payload.email as string,
+      full_name: (payload.full_name as string) || null,
       role: (payload.role as string) || "user",
       exp: payload.exp as number,
       iat: payload.iat as number,

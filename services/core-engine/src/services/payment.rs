@@ -43,6 +43,7 @@ impl std::error::Error for Error {}
 
 /// The Razorpay order created via the Orders API. `amount` is in paise.
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 pub struct RazorpayOrder {
     pub id: String,
     pub status: String,
